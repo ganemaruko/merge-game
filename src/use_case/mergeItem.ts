@@ -1,6 +1,14 @@
 import { Rank, getNextRank } from "~/entity/rank";
 
-export type ItemType = "RED" | "YELLOW" | "GREEN" | "BLUE" | "BLACK" | "WHITE";
+export const ITEMS = [
+  "RED",
+  "YELLOW",
+  "GREEN",
+  "BLUE",
+  "BLACK",
+  "WHITE",
+] as const;
+export type ItemType = (typeof ITEMS)[number];
 
 export const ItemTypes: { [key in ItemType]: Rank } = {
   RED: 0,

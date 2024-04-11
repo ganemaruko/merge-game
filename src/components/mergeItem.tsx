@@ -9,6 +9,7 @@ import { ItemInfo } from "~/use_case/mergeItem";
 export type MergeItemProps = {
   itemInfo: ItemInfo;
   merge: (src: ItemInfo, dest: ItemInfo) => void;
+  size: number;
 };
 
 export const MergeItem = (props: MergeItemProps) => {
@@ -28,16 +29,20 @@ export const MergeItem = (props: MergeItemProps) => {
         isDragging: !!monitor.isDragging(),
       }),
     }),
-    []
+    [props.itemInfo.itemType]
   );
 
-  const [, drop] = useDrop<ItemInfo, unknown, { isDragging: boolean }>(() => ({
-    accept: props.itemInfo.itemType,
-    drop: (item, monitor) => {
-      console.log(item, monitor);
-      props.merge(item, props.itemInfo);
-    },
-  }));
+  const [, drop] = useDrop<ItemInfo, unknown, { isDragging: boolean }>(
+    () => ({
+      accept: props.itemInfo.itemType,
+      drop: (item, monitor) => {
+        console.log(item, monitor);
+        props.merge(item, props.itemInfo);
+        setIsDragging(false);
+      },
+    }),
+    [props.itemInfo.itemType]
+  );
 
   useEffect(() => {
     setIsDragging(isLocalDragging);
@@ -65,21 +70,19 @@ export const MergeItem = (props: MergeItemProps) => {
     <div
       style={{
         position: "relative",
-        width: "80px",
-        height: "80px",
+        width: props.size,
+        height: props.size,
         border: "1px solid black",
       }}
     >
-      {/* <DragPreviewImage connect={preview} src={reactLogo} /> */}
       <div
         ref={drop}
         style={{
           position: "absolute",
           backgroundColor: color ? rgba(color, 0.1) : undefined,
           opacity: isDragging ? 0.5 : 1,
-          width: "80px",
-          height: "80px",
-          // bottom: "100px",
+          width: props.size,
+          height: props.size,
           pointerEvents: isDragging ? undefined : "none",
           zIndex: isDragging ? 1 : -1,
         }}
@@ -88,11 +91,10 @@ export const MergeItem = (props: MergeItemProps) => {
         ref={drag}
         style={{
           position: "absolute",
-          // opacity: isDragging ? 0.5 : 1,
-          // zIndex: 2,
-          width: "80px",
-          height: "80px",
+          width: props.size,
+          height: props.size,
           border: "1px solid white",
+          cursor: "move",
         }}
       >
         {color}
